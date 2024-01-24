@@ -1,44 +1,57 @@
-import {useEffect, useState} from 'react'
-import "./Register.css"
+import { useEffect, useState } from 'react';
+import './Register.css';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
-const[username, setUsername]= useState('');
-const [password, setPassword] = useState("");
-const getUsername = (e) => {
-  e.preventDefault();
-  setUsername(e.target.value);
-  console.log(username);
-};
+  const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
-const getpassword = (e) => {
-  e.preventDefault();
-  setPassword(e.target.value);
-  console.log(password);
-};
-const handleSubmit =async() =>{
-  try{
-      const response = await fetch('http://127.0.0.1:5000/user',
-         { 
-            method: 'POST', 
-            headers: { 
-                'Content-Type':  
-                    'application/json;charset=utf-8'
-            }, 
-            body: JSON.stringify({ username, password }),
-        } )
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+  };
 
-       const data = await response.json();
-       console.log(data)
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
 
-       alert("user registered successfully")
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Password validation
+    if (password !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
     }
 
-    catch(error){
-      console.error("This is the error:",error)
-    }
+    try {
+      //  API call logic here
+      const response = await fetch('http://127.0.0.1:5000/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+        },
+        body: JSON.stringify({ username, password }),
+        // mode: 'cors',
+      });
 
-}
+      const data = await response.json();
+      console.log(data);
+
+      alert('User registered successfully');
+      
+      navigate('/properties');
+      console.log('done');
+    } catch (error) {
+      console.error('This is the error:', error);
+    }
+  };
 
   return (
     <div className="register--container">
@@ -47,36 +60,39 @@ const handleSubmit =async() =>{
         <br />
         <input
           value={username}
-          onChange={(e) => getUsername(e)}
+          onChange={handleUsernameChange}
           className="input--field"
           type="text"
-          placeholder="username"
+          placeholder="Username"
         />
         <br />
         <label>Password</label>
         <br />
         <input
           value={password}
-          onChange={(e) => getpassword(e)}
+          onChange={handlePasswordChange}
           className="input--field"
           type="password"
-          placeholder="password"
+          placeholder="Password"
         />
         <br />
-        {/* <label>Confirm password</label>
+        <label>Confirm Password</label>
         <br />
         <input
+          value={confirmPassword}
+          onChange={handleConfirmPasswordChange}
           className="input--field"
           type="password"
-          placeholder="confirm password"
-        /> */}
+          placeholder="Confirm Password"
+        />
+        {passwordError && <p className="error-message">{passwordError}</p>}
         <br />
         <button className="submit--field" type="submit">
-          Submit
+          Register
         </button>
       </form>
     </div>
   );
 }
 
-export default Register
+export default Register;

@@ -9,7 +9,8 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)  
+    CORS(app,origins=["https://localhost:5173",'http://127.0.0.1:5000/user'])  
+
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///properties.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
     # app.json.compact= False
